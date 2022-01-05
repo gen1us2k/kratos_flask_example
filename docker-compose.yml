@@ -1,4 +1,4 @@
-version: "3.6"
+version: "3.7"
 
 x-build-args: &build_args
   INSTALL_PYTHON_VERSION: "3.10"
@@ -11,10 +11,9 @@ x-default-volumes: &default_volumes
     - ./dev.db:/tmp/dev.db
 
 services:
-  flask-dev:
+  flask:
     build:
       context: .
-      target: development
       args:
         <<: *build_args
     image: "kratos_app_example-development"
@@ -23,36 +22,66 @@ services:
       - "2992:2992"
     <<: *default_volumes
 
-  flask-prod:
-    build:
-      context: .
-      target: production
-      args:
-        <<: *build_args
-    image: "kratos_app_example-production"
-    ports:
-      - "8080:5000"
+  kratos-migrate:
+    image: oryd/kratos:v0.8.0-alpha.3
     environment:
-      FLASK_ENV: production
-      FLASK_DEBUG: 0
-      LOG_LEVEL: info
-      GUNICORN_WORKERS: 4
-    <<: *default_volumes
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      - type: volume
+        source: kratos-sqlite
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./kratos
+        target: /etc/config/kratos
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    restart: on-failure
+    networks:
+      - intranet
 
-  manage:
-    build:
-      context: .
-      target: development
-      args:
-        <<: *build_args
-    entrypoint: pipenv run flask
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:v0.8.0-alpha.3
     environment:
-      FLASK_ENV: production
-      FLASK_DEBUG: 0
-    image: "kratos_app_example-manage"
-    stdin_open: true
-    tty: true
-    <<: *default_volumes
+      - KRATOS_PUBLIC_URL=http://kratos:4433/
+      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
+    networks:
+      - intranet
+    restart: on-failure
+
+  kratos:
+    depends_on:
+      - kratos-migrate
+    image: oryd/kratos:v0.8.0-alpha.3-sqlite
+    ports:
+      - '4433:4433' # public
+      - '4434:4434' # admin
+    restart: unless-stopped
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - LOG_LEVEL=trace
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    volumes:
+      - type: volume
+        source: kratos-sqlite
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./kratos
+        target: /etc/config/kratos
+    networks:
+      - intranet
+
+  mailslurper:
+    image: oryd/mailslurper:latest-smtps
+    ports:
+      - '4436:4436'
+      - '4437:4437'
+    networks:
+      - intranet
 
 volumes:
   node-modules:
+  kratos-sqlite:
+
+networks:
+  intranet:

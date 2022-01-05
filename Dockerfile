@@ -2,7 +2,7 @@ FROM python:3.8-slim
 
 WORKDIR /app
 
-COPY ["Pipfile", "shell_scripts/auto_pipenv.sh", "./"]
+COPY ["Pipfile", "./"]
 RUN pip install --no-cache pipenv
 RUN pipenv install
 
