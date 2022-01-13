@@ -5,11 +5,11 @@ import sys
 
 from flask import Flask, render_template
 
-from kratos_app_example import commands, public
-from kratos_app_example.extensions import db, debug_toolbar
+from app import commands, public
+from app.extensions import db, debug_toolbar
 
 
-def create_app(config_object="kratos_app_example.settings"):
+def create_app(config_object="config.settings"):
     """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
 
     :param config_object: The configuration object to use.
