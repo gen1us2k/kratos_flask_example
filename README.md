@@ -1,8 +1,8 @@
-# Kratos App Example
+# An example Flask app using Kratos and Keto to check permissions and authenticate users
 
-An example of using ORY kratos with Flask 
+This repository stores example of integration [Ory Kratos](https://www.ory.sh/kratos/docs/quickstart/) and [Ory Keto](https://www.ory.sh/keto/docs/quickstart/) into the flask application
 
-## Docker Quickstart
+## Quickstart
 
 This app can be run completely using `Docker` and `docker-compose`. **Using Docker is recommended, as it guarantees the application is run using compatible versions of Python and Node**.
 
@@ -11,13 +11,7 @@ There are three main services:
 To run the development version of the app
 
 ```bash
-docker-compose up flask-dev
-```
-
-To run the production version of the app
-
-```bash
-docker-compose up flask-prod
+docker-compose up
 ```
 
 The list of `environment:` variables in the `docker-compose.yml` file takes precedence over any variables specified in `.env`.
@@ -46,9 +40,6 @@ Run the following commands to bootstrap your environment if you are unable to ru
 cd kratos_app_example
 pipenv install --dev
 pipenv shell
-npm install
-npm run-script build
-npm start  # run the webpack dev server and flask server using concurrently
 ```
 
 Go to `http://localhost:8080`. You will see a pretty welcome screen.
