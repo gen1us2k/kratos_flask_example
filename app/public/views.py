@@ -18,7 +18,6 @@ def home():
     if 'ory_kratos_session' not in request.cookies:
         return redirect(settings.KRATOS_UI_URL)
 
-
     response = requests.get(
         f"{settings.KRATOS_EXTERNAL_API_URL}/sessions/whoami",
         cookies=request.cookies
