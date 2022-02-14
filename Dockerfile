@@ -9,5 +9,5 @@ RUN pipenv install
 COPY . .
 
 EXPOSE 2992
-EXPOSE 5000
-CMD [ "pipenv", "run", "flask", "run"]
+EXPOSE 5001
+CMD [ "pipenv", "run", "flask", "run", "-p", "5001", "-h", "0.0.0.0"]

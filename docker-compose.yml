@@ -1,9 +1,5 @@
 version: "3.7"
 
-x-build-args: &build_args
-  INSTALL_PYTHON_VERSION: "3.10"
-  INSTALL_NODE_VERSION: "16"
-
 x-default-volumes: &default_volumes
   volumes:
     - ./:/app
@@ -11,18 +7,37 @@ x-default-volumes: &default_volumes
     - ./dev.db:/tmp/dev.db
 
 services:
+  oathkeeper:
+    image: oryd/oathkeeper:v0.38
+    depends_on:
+      - kratos
+    ports:
+      - 8080:4455
+      - 4456:4456
+    command:
+      serve proxy -c "/etc/config/oathkeeper/oathkeeper.yml"
+    environment:
+      - LOG_LEVEL=debug
+    restart: on-failure
+    networks:
+      - intranet
+    volumes:
+      - ./oathkeeper:/etc/config/oathkeeper
+
   flask:
     build:
       context: .
-      args:
-        <<: *build_args
     image: "kratos_app_example-development"
+    environment:
+      - FLASK_APP=autoapp.py
+      - FLASK_ENV=development
     networks:
       - intranet
-    ports:
-      - "8080:5000"
-      - "2992:2992"
-    <<: *default_volumes
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
 
   postgres-kratos:
     image: postgres:9.6
@@ -145,6 +160,7 @@ services:
     networks:
       - intranet
     command: serve
+
 
 volumes:
   node-modules:
