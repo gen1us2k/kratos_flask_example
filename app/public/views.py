@@ -43,3 +43,8 @@ def home():
         abort(HTTP_STATUS_FORBIDDEN)
 
     return render_template("public/home.html")
+
+@blueprint.route("/oathkeeper", methods=["GET", "POST"])
+def oathkeeper():
+    """ An example route to demo oathkeeper integration with Kratos """
+    return {"message": "greetings"}
