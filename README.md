@@ -1,4 +1,6 @@
-# An example Flask app using Kratos and Keto to check permissions and authenticate users
+# Project moved
+This project is read-only now. Everything is moved [here](https://github.com/ory/examples/tree/master/kratos-keto-flask)
+## An example Flask app using Kratos and Keto to check permissions and authenticate users
 
 This repository stores example of integration [Ory Kratos](https://www.ory.sh/kratos/docs/quickstart/) and [Ory Keto](https://www.ory.sh/keto/docs/quickstart/) into the flask application
 
